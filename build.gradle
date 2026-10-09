@@ -1,16 +1,20 @@
 plugins {
     id 'java'
     id 'application'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'com.gradleup.shadow' version '8.3.11'
 }
 
 group = 'org.example'
 version = findProperty('version') ?: '0.1.0'
 
-sourceCompatibility = '23'
-targetCompatibility = '23'
+java {
+    sourceCompatibility = JavaVersion.VERSION_23
+    targetCompatibility = JavaVersion.VERSION_23
+}
 
-mainClassName = 'org.example.TodoApp'
+application {
+    mainClass = 'org.example.TodoApp'
+}
 
 repositories {
     mavenCentral()
@@ -27,7 +31,7 @@ test {
 }
 
 shadowJar{
-    archiveBasename.set('todo-app')
+    archiveBaseName.set('todo-app')
     archiveClassifier.set('') // no classifier: produce todo-app-<version>.jar
     archiveVersion.set(project.version.toString())
     mergeServiceFiles()
