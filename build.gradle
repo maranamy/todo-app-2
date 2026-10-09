@@ -31,8 +31,8 @@ test {
 }
 
 shadowJar{
-    archiveBaseName.set('todo-app-2')
-    archiveClassifier.set('') // no classifier: produce todo-app-2-<version>.jar
+    archiveBaseName.set(project.name)
+    archiveClassifier.set('')
     archiveVersion.set(project.version.toString())
     mergeServiceFiles()
 }
