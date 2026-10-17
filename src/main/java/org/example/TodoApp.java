@@ -43,7 +43,7 @@ public class TodoApp {
                 case "list":
                     List<TodoList.Task> all = list.getAll();
                     for(int i=0; i<all.size(); i++)
-                        System.out.printf("%d: %s%n", i, all.get(i));
+                        System.out.printf("%d:[%s] %s%n", i, all.get(i).done() ? "v" : "", all.get(i).taskName());
 
                     if(all.isEmpty()) System.out.println("(empty list)");
                     break;

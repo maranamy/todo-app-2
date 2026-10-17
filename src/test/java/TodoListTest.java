@@ -14,7 +14,7 @@ public class TodoListTest {
         TodoList td = new TodoList();
         td.add(" первая задача ");
         assertEquals(1, td.size());
-        assertEquals(new TodoList.Task("first task", false), td.getAll().getFirst());
+        assertEquals(new TodoList.Task("первая задача", false), td.getAll().getFirst());
     }
 
     @Test
