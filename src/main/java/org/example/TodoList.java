@@ -1,7 +1,6 @@
 package org.example;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 
@@ -43,7 +42,7 @@ public class TodoList {
 
     //marking the completed task
     public boolean markDone (int index){
-        if(index > 0 && index < items.size()){
+        if(index >= 0 && index < items.size()){
             items.set(index, new
                     Task(items.get(index).taskName(), true));
             return true;
