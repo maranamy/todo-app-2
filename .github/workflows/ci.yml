@@ -15,6 +15,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
@@ -34,11 +36,35 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*','**/gradlewrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Get project version
-        id: get_version
+            
+            
+
+      - name: Auto-bump project version in gradle.properties
+        id: bump_version
         run: |
-          VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2)
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            # Читаем текущую версию
+            CURRENT_VERSION=$(grep '^version=' gradle.properties | cut -d'=' -f2 | tr -d '\r')
+            
+            # Разбиваем на части
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+            
+            # Увеличиваем PATCH на 1
+            NEW_PATCH=$((PATCH + 1))
+            NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+            
+            # Записываем новую версию обратно в файл 
+            sed -i "s/^version=.*/version=$NEW_VERSION/" gradle.properties
+            
+            # Сохраняем новую версию в переменную окружения для следующих шагов
+            echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "Версия обновлена: $CURRENT_VERSION -> $NEW_VERSION"
+
+      - name: Commit and push updated gradle.properties
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+        # [skip ci]  предотвращает бесконечный цикл запусков CI
+          commit_message: "chore: auto-bump version to ${{ steps.bump_version.outputs.NEW_VERSION }} [skip ci]"
+          file_pattern: gradle.properties
 
       - name: Build (run tests and create fat JAR)
         run: ./gradlew --no-daemon clean build
