@@ -1,0 +1,37 @@
+name: Nightly Build & Stability Check
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # start at midnight
+  workflow_dispatch:
+
+jobs:
+  nightly-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: action/checkout@v4
+
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x gradlew
+
+      - name: Set up JDK 23
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '23'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runners.os }}-gradle-${{ hashFiles('**/*.gradle', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build and Run Tests (No Realise)
+        run: ./gradlew --no-daemon clean build
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME_23_X64 || '' }}
